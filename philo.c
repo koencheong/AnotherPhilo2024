@@ -156,15 +156,30 @@ void	*routine(void *philo_passed)
 	return (NULL);
 }
 
+void	*lonely_philo(void *philo_passed)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *) philo_passed;
+	pthread_mutex_lock(&philo->data->debug);
+	philo->last_meal_time = get_time();
+	pthread_mutex_unlock(&philo->data->debug);
+	pthread_mutex_lock(&philo->first_fork->fork);
+	write_message(philo, "has taken a fork");
+	pthread_mutex_unlock(&philo->first_fork->fork);
+	while (anyone_died_or_full(philo) != true)
+		ft_usleep(200);
+	return (NULL);
+}
+
 void	start_routine(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	if (data->meals_nbr == 0)
-		return ;
-	else if (data->meals_nbr == 1)
-		; //TODO
+	if (data->philo_nbr == 1)
+		pthread_create(&data->philos[i].thread_id, NULL,
+			&lonely_philo, &data->philos[i]);
 	else
 	{
 		while (i < data->philo_nbr)
