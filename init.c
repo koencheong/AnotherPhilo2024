@@ -26,14 +26,13 @@ static void philo_init(t_data *data)
 	{
 		philo = data->philos + i;
 		philo->id = i + 1;
-		philo->isFull = false;
 		philo->isDead = false;
+		philo->isFull = false;
 		philo->meals_counter = 0;
 		philo->data = data;
 		philo->start_time = get_time();
 		assign_forks(philo, data->forks, i);
 		pthread_mutex_init(&philo->write_lock, NULL);
-		pthread_mutex_init(&philo->debug, NULL);
 		// printf("Philo %d first fork is %d second fork is %d\n", philo->id, philo->first_fork->fork_id, philo->second_fork->fork_id);
 		i++;
 	}
@@ -46,8 +45,11 @@ void	data_init(t_data *data)
 	i = 0;
 	data->philos = safe_malloc(sizeof(t_philo) * data->philo_nbr);
 	data->forks = safe_malloc(sizeof(t_fork) * data->philo_nbr);
+	data->all_full = 0;
 	pthread_mutex_init(&data->check_lock, NULL);
 	pthread_mutex_init(&data->check2_lock, NULL);
+	pthread_mutex_init(&data->debug, NULL);
+	pthread_mutex_init(&data->full, NULL);
 	while (i < data->philo_nbr)
 	{
 		pthread_mutex_init(&data->forks[i].fork, NULL);

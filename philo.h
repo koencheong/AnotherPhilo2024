@@ -42,9 +42,13 @@ typedef struct s_data
 	long	time_to_sleep;
 	long	meals_nbr;
 	// long	start_time;
+	// int		*isFull;
+	int		all_full;
 	t_fork	*forks;
 	t_mtx	check_lock;
 	t_mtx	check2_lock;
+	t_mtx		debug;
+	t_mtx		full;
 	struct	s_philo	*philos;
 }	t_data;
 
@@ -52,7 +56,7 @@ typedef struct s_philo
 {
 	int			id;
 	long		meals_counter;
-	bool		isFull;
+	int			isFull;
 	bool		isDead;
 	long		last_meal_time;
 	long		start_time;
@@ -61,7 +65,6 @@ typedef struct s_philo
 	pthread_t	thread_id;
 	t_data		*data;
 	t_mtx		write_lock;
-	t_mtx		debug;
 }	t_philo;
 
 
@@ -80,4 +83,4 @@ void	*safe_malloc(size_t size);
 
 // philo
 void	start_routine(t_data *data);
-int		anyoneDied(t_philo *philo);
+int		anyone_died_or_full(t_philo *philo);

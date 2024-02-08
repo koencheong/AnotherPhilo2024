@@ -2,7 +2,7 @@
 
 void	write_message(t_philo *philo, char *message)
 {
-	if (anyoneDied(philo) == true)
+	if (anyone_died_or_full(philo) == true)
 		return ;
 	else
 	{
@@ -19,15 +19,19 @@ void	checkIsDead(t_data *data)
 	long time_to_die;
 	int	nbr_of_philo;
 	long	last_meal;
+	int	isFull;
 
 	cont = 1;
 	while (cont == 1)
 	{
 		i = 0;
+		pthread_mutex_lock(&data->debug);
+		last_meal = data->philos[i].last_meal_time;
+		pthread_mutex_unlock(&data->debug);
 		pthread_mutex_lock(&data->check_lock);
 		time_to_die = data->time_to_die;
 		nbr_of_philo = data->philo_nbr;
-		last_meal = data->philos[i].last_meal_time;
+		isFull = data->philos[i].isFull;
 		pthread_mutex_unlock(&data->check_lock);
 		while (cont && (i < nbr_of_philo))
 		{
@@ -39,22 +43,41 @@ void	checkIsDead(t_data *data)
 				pthread_mutex_unlock(&data->check2_lock);
 				cont = 0;
 			}
+			if (isFull == true)
+			{
+				pthread_mutex_lock(&data->full);
+				data->all_full++;
+				// printf("Philo %d is full; counter: %d\n", data->philos[i].id, data->all_full);
+				if (data->all_full == nbr_of_philo)
+				{
+					cont = 0;
+					pthread_mutex_lock(&data->check2_lock);
+					data->philos[i].isDead = true;
+					pthread_mutex_unlock(&data->check2_lock);
+				}
+				pthread_mutex_unlock(&data->full);
+				// else
+			}
 			i++;
 		}
 	}
 }
 
-int	anyoneDied(t_philo *philo)
+int	anyone_died_or_full(t_philo *philo)
 {
 	int	ret;
 	int	i;
 	int	n;
+	// int	isFull;
 
 	ret = 0;
 	i = 0;
 	pthread_mutex_lock(&philo->data->check_lock);
 	n = philo->data->philo_nbr;
 	pthread_mutex_unlock(&philo->data->check_lock);
+	// pthread_mutex_lock(&philo->data->full);
+	// isFull = philo->data->isFull[i];
+	// pthread_mutex_unlock(&philo->data->full);
 	while (i < n)
 	{
 		pthread_mutex_lock(&philo->data->check2_lock);
@@ -71,7 +94,7 @@ void	waitForAction(t_philo *philo, long time)
 	long	start;
 
 	start = get_time();
-	while (anyoneDied(philo) != true)
+	while (anyone_died_or_full(philo) != true)
 	{
 		if (get_time() - start >= time)
 			return ;
@@ -85,32 +108,42 @@ void	*routine(void *philo_passed)
 	t_philo *philo;
 	long	eat;
 	long	sleep;
-	
+
 	philo = (t_philo *) philo_passed;
 	pthread_mutex_lock(&philo->data->check_lock);
 	eat = philo->data->time_to_eat;
 	sleep = philo->data->time_to_sleep;
 	pthread_mutex_unlock(&philo->data->check_lock);
-	while (anyoneDied(philo) != true)
+	while (anyone_died_or_full(philo) != true)
 	{
-		if (anyoneDied(philo) != true)
+		if (anyone_died_or_full(philo) != true)
 		{
 			pthread_mutex_lock(&philo->first_fork->fork);
 			write_message(philo, "has taken a fork");
 			pthread_mutex_lock(&philo->second_fork->fork);
 			write_message(philo, "has taken a fork");
 			write_message(philo, "is eating");
-			pthread_mutex_lock(&philo->data->check_lock);
+			pthread_mutex_lock(&philo->data->debug);
 			philo->last_meal_time = get_time();
-			// philo->meals_counter++;
-			// CHECK MEAL NUMBER
-			pthread_mutex_unlock(&philo->data->check_lock);
+			pthread_mutex_unlock(&philo->data->debug);
 			waitForAction(philo, eat);
+			pthread_mutex_lock(&philo->data->check_lock);
+			philo->meals_counter++;
+			// printf("Philo %d eaten %ld meals\n", philo->id, philo->meals_counter);
+			if (philo->data->meals_nbr != -1)
+			{
+				if (philo->meals_counter > philo->data->meals_nbr)
+				{
+					// printf("Philo %d: I AM FULL!!\n", philo->id);
+					philo->isFull = true;
+				}
+			}
+			pthread_mutex_unlock(&philo->data->check_lock);
 			pthread_mutex_unlock(&philo->first_fork->fork);
 			pthread_mutex_unlock(&philo->second_fork->fork);
 		}
 
-		if (anyoneDied(philo) != true)
+		if (anyone_died_or_full(philo) != true)
 		{
 			write_message(philo, "is sleeping");
 			waitForAction(philo, sleep);
