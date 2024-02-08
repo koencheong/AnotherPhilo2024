@@ -29,6 +29,22 @@ Philo test
   dies at the right time if they don't steal forks, etc.
 */
 
+void	clean(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->philo_nbr)
+	{
+		pthread_mutex_destroy(&data->forks[i].fork);
+		pthread_mutex_destroy(&data->philos[i].write_lock);
+		i++;
+	}
+	pthread_mutex_destroy(&data->check_lock);
+	free(data->forks);
+	free(data->philos);
+}
+
 int	main(int argc, char **argv)
 {
 	t_data	data;
@@ -37,8 +53,9 @@ int	main(int argc, char **argv)
 	{
 		parse_input(&data, argv);
 		data_init(&data);
-		start_routine(&data);
-		// clean(&data);
+		// start_routine(&data);
+		if (start_routine(&data) == 0)
+			clean(&data);
 		// printf("%ld\n", data.philo_nbr);
 		// printf("%ld\n", data.time_to_die);
 		// printf("%ld\n", data.time_to_eat);
@@ -47,4 +64,6 @@ int	main(int argc, char **argv)
 	}
 	else
 		error_exit("Wrong input.");
+
+	// system("leaks philo");
 }
