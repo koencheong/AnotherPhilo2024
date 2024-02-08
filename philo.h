@@ -19,13 +19,6 @@
 #include <sys/time.h> // gettimeofday
 #include <limits.h> // INT_MAX
 
-typedef enum	status
-{
-	EATING,
-	THINKING,
-	SLEEPING
-}	t_status;
-
 typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_fork
@@ -41,14 +34,12 @@ typedef struct s_data
 	long	time_to_eat;
 	long	time_to_sleep;
 	long	meals_nbr;
-	// long	start_time;
-	// int		*isFull;
 	int		all_full;
 	t_fork	*forks;
 	t_mtx	check_lock;
 	t_mtx	check2_lock;
-	t_mtx		debug;
-	t_mtx		full;
+	t_mtx	debug;
+	t_mtx	full;
 	struct	s_philo	*philos;
 }	t_data;
 

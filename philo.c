@@ -178,25 +178,25 @@ void	start_routine(t_data *data)
 
 	i = 0;
 	if (data->philo_nbr == 1)
+	{
 		pthread_create(&data->philos[i].thread_id, NULL,
 			&lonely_philo, &data->philos[i]);
+			usleep(10);
+	}
 	else
 	{
 		while (i < data->philo_nbr)
 		{
-			// printf("i is %d\n", i);
 			pthread_create(&data->philos[i].thread_id, NULL, &routine, &data->philos[i]);
 			i++;
 			usleep(100);
 		}
 	}
-	// printf("heree\n");
 	checkIsDead(data);
 	i = 0;
 	while (i < data->philo_nbr)
 	{
 		pthread_join(data->philos[i].thread_id, NULL);
-		// printf("Joining philo %d......\n", data->philos->id);
 		i++;
 	}
 }
