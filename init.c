@@ -1,7 +1,34 @@
-#include "philo.h"
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kcheong <kcheong@student.42kl.edu.my>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/02/08 18:06:56 by kcheong           #+#    #+#             */
+/*   Updated: 2024/02/08 18:06:56 by kcheong          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static void assign_forks(t_philo *philo, t_fork *forks, int position)
+#include "philo.h"
+
+void	parse_input(t_data *data, char **argv)
+{
+	data->philo_nbr = ft_atol(argv[1]);
+	data->time_to_die = (ft_atol(argv[2]));
+	data->time_to_eat = (ft_atol(argv[3]));
+	data->time_to_sleep = (ft_atol(argv[4]));
+	if (data->time_to_die < 60
+		|| data->time_to_eat < 60
+		|| data->time_to_sleep < 60)
+		error_exit("Die/Eat/Sleep time need to be larger than 60ms.");
+	if (argv[5])
+		data->meals_nbr = ft_atol(argv[5]);
+	else
+		data->meals_nbr = -1;
+}
+
+static void	assign_forks(t_philo *philo, t_fork *forks, int position)
 {
 	int	philo_nbr;
 
@@ -10,16 +37,15 @@ static void assign_forks(t_philo *philo, t_fork *forks, int position)
 	philo->second_fork = &forks[position];
 	if (philo->id % 2 == 0)
 	{
-		// printf("Philo position is %d\n", position);
 		philo->first_fork = &forks[position];
 		philo->second_fork = &forks[(position + 1) % philo_nbr];
 	}
 }
 
-static void philo_init(t_data *data)
+static void	philo_init(t_data *data)
 {
-	int i;
-	t_philo *philo;
+	int		i;
+	t_philo	*philo;
 
 	i = 0;
 	while (i < data->philo_nbr)
@@ -33,7 +59,6 @@ static void philo_init(t_data *data)
 		philo->start_time = get_time();
 		assign_forks(philo, data->forks, i);
 		pthread_mutex_init(&philo->write_lock, NULL);
-		// printf("Philo %d first fork is %d second fork is %d\n", philo->id, philo->first_fork->fork_id, philo->second_fork->fork_id);
 		i++;
 	}
 }

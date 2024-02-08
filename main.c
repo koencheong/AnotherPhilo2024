@@ -41,6 +41,9 @@ void	clean(t_data *data)
 		i++;
 	}
 	pthread_mutex_destroy(&data->check_lock);
+	pthread_mutex_destroy(&data->check2_lock);
+	pthread_mutex_destroy(&data->debug);
+	pthread_mutex_destroy(&data->full_lock);
 	free(data->forks);
 	free(data->philos);
 }
@@ -59,4 +62,3 @@ int	main(int argc, char **argv)
 	else
 		error_exit("Wrong input!!");
 }
-

@@ -61,22 +61,30 @@ typedef struct s_philo
 	t_mtx		write_lock;
 }	t_philo;
 
-
 // utils
 void	error_exit(const char *error);
 long	ft_atol(const char *str);
-void	parse_input(t_data *data, char **argv);
 long	get_time(void);
 
 // init
+void	parse_input(t_data *data, char **argv);
 void	data_init(t_data *data);
-
-// safe functions
-void	*safe_malloc(size_t size);
 
 // philo
 void	start_routine(t_data *data);
+void	*routine(void *philo_passed);
+void	*lonely_philo(void *philo_passed);
+
+// check dead or full
+void	check_is_dead(t_data *data);
+int		show_died(t_data *data, long last_meal, long time_to_die, int i);
+int		check_is_full(t_data *data, int nbr_of_philo, int cont, int i);
+
+// actions
 int		anyone_died_or_full(t_philo *philo);
 void	write_message(t_philo *philo, char *message);
+void	philo_eat(t_philo *philo, long eat);
+void	wait_for_action(t_philo *philo, long time);
+void	*safe_malloc(size_t size);
 
 #endif
