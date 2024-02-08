@@ -10,14 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h> // printf
-#include <stdlib.h> // malloc free
-#include <unistd.h> // usleep
-#include <stdbool.h>
-#include <pthread.h> // mutex: init destroy lock unlock
-					 // threads: create join detach
-#include <sys/time.h> // gettimeofday
-#include <limits.h> // INT_MAX
+#ifndef PHILO_H
+# define PHILO_H
+
+# include <stdio.h> // printf
+# include <stdlib.h> // malloc free
+# include <unistd.h> // usleep
+# include <stdbool.h>
+# include <pthread.h> // mutex: init destroy lock unlock; 
+						// threads: create join detach
+# include <sys/time.h> // gettimeofday
+# include <limits.h> // INT_MAX
 
 typedef pthread_mutex_t	t_mtx;
 
@@ -29,26 +32,26 @@ typedef struct s_fork
 
 typedef struct s_data
 {
-	long	philo_nbr;
-	long	time_to_die;
-	long	time_to_eat;
-	long	time_to_sleep;
-	long	meals_nbr;
-	int		all_full;
-	t_fork	*forks;
-	t_mtx	check_lock;
-	t_mtx	check2_lock;
-	t_mtx	debug;
-	t_mtx	full;
-	struct	s_philo	*philos;
+	long			philo_nbr;
+	long			time_to_die;
+	long			time_to_eat;
+	long			time_to_sleep;
+	long			meals_nbr;
+	int				all_full;
+	t_fork			*forks;
+	t_mtx			check_lock;
+	t_mtx			check2_lock;
+	t_mtx			debug;
+	t_mtx			full_lock;
+	struct s_philo	*philos;
 }	t_data;
 
 typedef struct s_philo
 {
 	int			id;
 	long		meals_counter;
-	int			isFull;
-	bool		isDead;
+	int			is_full;
+	bool		is_dead;
 	long		last_meal_time;
 	long		start_time;
 	t_fork		*first_fork;
@@ -74,3 +77,6 @@ void	*safe_malloc(size_t size);
 // philo
 void	start_routine(t_data *data);
 int		anyone_died_or_full(t_philo *philo);
+void	write_message(t_philo *philo, char *message);
+
+#endif

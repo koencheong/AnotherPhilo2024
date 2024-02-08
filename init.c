@@ -26,8 +26,8 @@ static void philo_init(t_data *data)
 	{
 		philo = data->philos + i;
 		philo->id = i + 1;
-		philo->isDead = false;
-		philo->isFull = false;
+		philo->is_dead = false;
+		philo->is_full = false;
 		philo->meals_counter = 0;
 		philo->data = data;
 		philo->start_time = get_time();
@@ -49,7 +49,7 @@ void	data_init(t_data *data)
 	pthread_mutex_init(&data->check_lock, NULL);
 	pthread_mutex_init(&data->check2_lock, NULL);
 	pthread_mutex_init(&data->debug, NULL);
-	pthread_mutex_init(&data->full, NULL);
+	pthread_mutex_init(&data->full_lock, NULL);
 	while (i < data->philo_nbr)
 	{
 		pthread_mutex_init(&data->forks[i].fork, NULL);
