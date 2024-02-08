@@ -73,7 +73,6 @@ void	error_exit(const char *error);
 long	ft_atol(const char *str);
 void	parse_input(t_data *data, char **argv);
 long	get_time(void);
-int		ft_usleep(useconds_t time);
 
 // init
 void	data_init(t_data *data);

@@ -98,7 +98,7 @@ void	waitForAction(t_philo *philo, long time)
 	{
 		if (get_time() - start >= time)
 			return ;
-		ft_usleep(20);
+		usleep(20);
 	}
 	return ;
 }
@@ -168,7 +168,7 @@ void	*lonely_philo(void *philo_passed)
 	write_message(philo, "has taken a fork");
 	pthread_mutex_unlock(&philo->first_fork->fork);
 	while (anyone_died_or_full(philo) != true)
-		ft_usleep(200);
+		usleep(200);
 	return (NULL);
 }
 
